@@ -1,13 +1,14 @@
 package com.example.project.uber.UberApp.strategies.impl;
 
 
-import com.example.project.uber.UberApp.dto.RideRequestDto;
-import com.example.project.uber.UberApp.strategies.RideFareCalulationStrategy;
 
-public class RideFareSurgePricingFareCalculationStrategy implements RideFareCalulationStrategy {
+import com.example.project.uber.UberApp.entities.RideRequest;
+import com.example.project.uber.UberApp.strategies.RideFareCalculationStrategy;
+
+public class RideFareSurgePricingFareCalculationStrategy implements RideFareCalculationStrategy {
 
     @Override
-    public double calculateFare(RideRequestDto rideRequestDto) {
+    public double calculateFare(RideRequest rideRequest) {
         return 0;
     }
 }

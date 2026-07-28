@@ -4,6 +4,8 @@ import com.example.project.uber.UberApp.dto.DriverDto;
 import com.example.project.uber.UberApp.dto.RideDto;
 import com.example.project.uber.UberApp.dto.RideRequestDto;
 import com.example.project.uber.UberApp.dto.RiderDto;
+import com.example.project.uber.UberApp.entities.Rider;
+import com.example.project.uber.UberApp.entities.User;
 
 import java.util.List;
 
@@ -18,4 +20,5 @@ public interface RiderService {
     RiderDto getMyProfile();
 
     List<RideDto> getAllMyRides();
+    Rider createNewRider(User user);
 }

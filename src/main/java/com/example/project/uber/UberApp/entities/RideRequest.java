@@ -23,7 +23,7 @@ public class RideRequest {
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point pickupLocation;
     @Column(columnDefinition = "geometry(Point, 4326)")
-    private Point dropoffLocation;
+    private Point dropOffLocation;
 
     @CreationTimestamp
     private LocalDateTime requestCreationTime;
@@ -31,8 +31,11 @@ public class RideRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     private Rider rider;
 
+    private Double fare;
+
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
+
     @Enumerated(EnumType.STRING)
-    private RideRequestStatus status;
+    private RideRequestStatus rideRequestStatus;
 }

@@ -8,9 +8,9 @@ import lombok.Setter;
 import java.util.Set;
 
 @Entity
+@Table(name = "app_user")
 @Getter
 @Setter
-@Table(name = "app_users")
 public class User {
 
     @Id
@@ -24,6 +24,6 @@ public class User {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
-    private Set<Role> role;
+    private Set<Role> roles;
 
 }
