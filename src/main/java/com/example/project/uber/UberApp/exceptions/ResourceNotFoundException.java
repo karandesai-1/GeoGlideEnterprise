@@ -1,6 +1,6 @@
 package com.example.project.uber.UberApp.exceptions;
 
-public class ResourceNotFoundException extends Throwable {
+public class ResourceNotFoundException extends RuntimeException {
 
     public ResourceNotFoundException() {
     }
