@@ -9,6 +9,7 @@ import com.example.project.uber.UberApp.exceptions.RuntimeConflictException;
 import com.example.project.uber.UberApp.repositories.UserRepository;
 import com.example.project.uber.UberApp.services.AuthService;
 import com.example.project.uber.UberApp.services.RiderService;
+import com.example.project.uber.UberApp.services.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     private final RiderService riderService;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final WalletService  walletService;
 
     @Override
     public String login(String email, String password) {
@@ -40,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
 
 //        create user related entities
         riderService.createNewRider(savedUser);
-//        TODO add wallet related service here
+        walletService.createNewWallet(savedUser);
 
         return modelMapper.map(savedUser, UserDto.class);
     }

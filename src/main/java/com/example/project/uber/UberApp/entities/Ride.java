@@ -37,7 +37,7 @@ public class Ride {
     @CreationTimestamp
     private LocalDateTime requestCreationTime;
     private LocalDateTime startedAt;
-    private LocalDateTime endTime;
+    private LocalDateTime endedAt;
 
     private String otp;
 

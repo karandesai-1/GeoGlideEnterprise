@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RiderDto {
 
+    private Long id;
     private UserDto user;
     private Double rating;
 }

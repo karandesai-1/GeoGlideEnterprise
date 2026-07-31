@@ -3,10 +3,16 @@ package com.example.project.uber.UberApp.entities;
 import com.example.project.uber.UberApp.entities.enums.TransactionMethod;
 import com.example.project.uber.UberApp.entities.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 public class WalletTransaction {
 
@@ -20,7 +26,7 @@ public class WalletTransaction {
 
     private TransactionMethod transactionMethod;
 
-    @OneToOne
+    @ManyToOne
     private Ride ride;
 
     private String transactionId;

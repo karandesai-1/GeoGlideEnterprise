@@ -11,9 +11,12 @@ import com.example.project.uber.UberApp.entities.enums.RideStatus;
 import com.example.project.uber.UberApp.exceptions.ResourceNotFoundException;
 import com.example.project.uber.UberApp.repositories.DriverRepository;
 import com.example.project.uber.UberApp.services.DriverService;
+import com.example.project.uber.UberApp.services.PaymentService;
 import com.example.project.uber.UberApp.services.RideRequestService;
 import com.example.project.uber.UberApp.services.RideService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,7 @@ public class DriverServiceImpl implements DriverService {
     private DriverRepository driverRepository;
     private RideRequestService rideRequestService;
     private RideService rideService;
+    private PaymentService paymentService;
 
     @Override
     @Transactional
@@ -51,7 +55,21 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public RideDto cancelRide(Long rideId) {
-        return null;
+        Ride ride = rideService.getRideById(rideId);
+        Driver driver = getCurrentDriver();
+
+        if(!driver.equals(ride.getDriver())) {
+            throw new RuntimeException("Driver cannot cancel a ride as he has not accepted it earlier");
+        }
+
+        if(!ride.getRideStatus().equals(RideStatus.CONFIRMED)) {
+            throw new RuntimeException("Ride status is not CONFIRMED hence cannot be cancelled, status: "+ride.getRideStatus());
+        }
+        Ride savedRide = rideService.updateRideStatus(ride, RideStatus.CANCELLED);
+
+        driver.setAvailable(true);
+        driverRepository.save(driver);
+        return modelMapper.map(savedRide, RideDto.class);
     }
 
     @Override
@@ -73,12 +91,32 @@ public class DriverServiceImpl implements DriverService {
 
         ride.setStartedAt(LocalDateTime.now());
         Ride savedRide = rideService.updateRideStatus(ride, RideStatus.ONGOING);
+
+        paymentService.createNewPayment(savedRide);
+
         return modelMapper.map(savedRide, RideDto.class);
     }
 
     @Override
     public RideDto endRide(Long rideId) {
-        return null;
+        Ride ride = rideService.getRideById(rideId);
+
+        Driver driver = getCurrentDriver();
+        if(!driver.equals(ride.getDriver())) {
+            throw new RuntimeException("Driver cannot end a ride as he has not accepted it earlier");
+        }
+
+        if(!ride.getRideStatus().equals(RideStatus.ONGOING)) {
+            throw new RuntimeException("Ride status is not ONGOING hence cannot be ended, status: "+ride.getRideStatus());
+        }
+
+        ride.setEndedAt(LocalDateTime.now());
+        Ride savedRide = rideService.updateRideStatus(ride, RideStatus.ENDED);
+        updateDriverAvailability(driver, true);
+
+        paymentService.processPayment(ride);
+
+        return modelMapper.map(savedRide, RideDto.class);
     }
 
     @Override
@@ -88,17 +126,27 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public DriverDto getMyProfile() {
-        return null;
+        Driver driver = getCurrentDriver();
+        return modelMapper.map(driver, DriverDto.class);
     }
 
     @Override
-    public List<RideDto> getAllMyRides() {
-        return List.of();
+    public Page<RideDto> getAllMyRides(PageRequest pageRequest) {
+        Driver currentDriver = getCurrentDriver();
+        return rideService.getAllRidesOfDriver(currentDriver, pageRequest).map(
+                ride -> modelMapper.map(ride, RideDto.class)
+        );
     }
 
     @Override
     public Driver getCurrentDriver() {
         return driverRepository.findById(2L).orElseThrow(() -> new ResourceNotFoundException("Driver not found with " +
                 "id "+2));
+    }
+
+    @Override
+    public Driver updateDriverAvailability(Driver driver, boolean available) {
+        driver.setAvailable(available);
+        return driverRepository.save(driver);
     }
 }
